@@ -1,4 +1,5 @@
 import express from 'express';
+import {ServerTest}  from './constants/ServerTest.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -6,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', message: 'Server is running!' });
+  res.status(200).json(ServerTest);
 });
 
 app.get('/', (req, res) => {
