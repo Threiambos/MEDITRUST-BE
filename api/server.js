@@ -1,13 +1,34 @@
 import express from 'express';
-import {ServerTest}  from './constants/ServerTest.js';
+import bodyParser from 'body-parser';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import { ServerTest } from './constants/ServerTest.js';
+import AuthController from './controllers/AuthController.js'; // fixed relative path
+import databaseConnector from '../api/configs/DatabaseConnector.js'; // example for DB connection
 
+dotenv.config();
+
+const PORT = process.env.PORT || 8081;
 const app = express();
-const PORT = process.env.PORT || 3000;
 
+// Middleware
+app.use(bodyParser.json({ limit: '100mb' }));
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
+databaseConnector();
+
+app.use('/api/auth', AuthController);
+
 app.get('/health', (req, res) => {
-  res.send(ServerTest);
+  res.json(ServerTest);
 });
 
 app.get('/', (req, res) => {
