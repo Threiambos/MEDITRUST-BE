@@ -13,7 +13,6 @@ const databaseConnector = async () => {
       socketTimeoutMS: 45000,
     });
     console.log('Database connected successfully😊');
-    console.log('Database URI:', uri);
   } catch (error) {
     console.error('MongoDB connection error:❌', error);
     process.exit(1);
