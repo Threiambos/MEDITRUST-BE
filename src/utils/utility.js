@@ -36,7 +36,7 @@ export const getCurrentTime = (incremented) => {
 
 export const convertToResponse = (data, messageText, messageType, status) => {
   return {
-    data: data,
+    ...data,
     message: { messageText: messageText, messageType: messageType },
     status: status,
   };

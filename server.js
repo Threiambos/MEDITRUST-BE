@@ -1,17 +1,16 @@
-import express from 'express';
 import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
 import cors from 'cors';
+import dotenv from 'dotenv';
+import express from 'express';
+import databaseConnector from './src/configs/DatabaseConnector.js';
 import { ServerTest } from './src/constants/ServerTest.js';
-import AuthController from './src/controllers/AuthController.js'; // fixed relative path
-import databaseConnector from './src/configs/DatabaseConnector.js'; // example for DB connection
+import AuthController from './src/controllers/AuthController.js';
 
 dotenv.config();
 
 const PORT = process.env.PORT || 8081;
 const app = express();
 
-// Middleware
 app.use(bodyParser.json({ limit: '100mb' }));
 app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 app.use(

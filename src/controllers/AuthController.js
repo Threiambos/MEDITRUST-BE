@@ -1,8 +1,10 @@
 import express from 'express';
-import User from '../models/User.js';
-import { convertToResponse, decrypt, encrypt } from '../utils/utility.js';
+import jwt from 'jsonwebtoken';
 import { USER_ROLES } from '../constants/AppConstants.js';
+import Token from '../models/Token.js';
+import User from '../models/User.js';
 import { generateRefreshToken, generateTokens } from '../services/authService.js';
+import { convertToResponse, decrypt, encrypt } from '../utils/utility.js';
 
 const router = express.Router();
 
@@ -78,10 +80,7 @@ router.post('/login', async (req, res) => {
     return res.status(200).json(
       convertToResponse(
         {
-          name: user.name,
-          user_name: user.user_name,
-          mobile: user.mobile,
-          role: user.role,
+          user: { name: user.name, user_name: user.user_name, mobile: user.mobile, role: user.role },
           access_token: accessToken,
           refresh_token: user.refresh_token,
         },
@@ -93,6 +92,60 @@ router.post('/login', async (req, res) => {
   } catch (error) {
     console.error('Error logging in:', error);
     return res.status(500).json(convertToResponse({}, error?.message || 'Internal server error', 'error', false));
+  }
+});
+
+/**
+ * @route   POST /api/auth/logout
+ * @desc    Logout the User
+ * @access  Public
+ */
+router.post('/logout', async (req, res) => {
+  const authHeader = req.headers['authorization'];
+
+  try {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ isAuthenticated: false, message: 'Invalid Token' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    await Token.findOneAndDelete({ token });
+    return res.status(200).json({ message: 'Logged out successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
+
+/**
+ * @route   POST /api/auth/check-isAuthenticate
+ * @desc    Check if the user is authenticated
+ * @access  Public
+ */
+router.get('/check-isAuthenticate', async (req, res) => {
+  const authHeader = req.headers['authorization'];
+
+  try {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ isAuthenticated: false, message: 'Invalid Token' });
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    jwt.verify(token, process.env.TOKEN_SECRET, async (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ isAuthenticated: false, message: 'Invalid or expired token' });
+      }
+      const tokenExists = await Token.findOne({ token });
+      if (!tokenExists) {
+        return res.status(401).json({ isAuthenticated: false, message: 'Token not found' });
+      }
+
+      return res.status(200).json({ isAuthenticated: true, message: 'Token is valid', user: decoded });
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ isAuthenticated: false, message: 'Server error' });
   }
 });
 
