@@ -5,6 +5,8 @@ import express from 'express';
 import databaseConnector from './src/configs/DatabaseConnector.js';
 import { ServerTest } from './src/constants/ServerTest.js';
 import AuthController from './src/controllers/AuthController.js';
+import UserController from './src/controllers/UserController.js';
+import { isAuthenticated } from './src/middelwares/authMiddleware.js';
 
 dotenv.config();
 
@@ -21,10 +23,10 @@ app.use(
   }),
 );
 app.use(express.json());
-
 databaseConnector();
 
 app.use('/api/auth', AuthController);
+app.use('/api/user', isAuthenticated, UserController);
 
 app.get('/health', (req, res) => {
   res.json(ServerTest);

@@ -13,7 +13,7 @@ const { TOKEN_SECRET, REFRESH_TOKEN_SECRET, JWT_ACCESS_TOKEN_EXPIRES_TIME, JWT_R
  */
 export const generateTokens = async (user) => {
   try {
-    const payload = { _id: user._id, role: user.role };
+    const payload = { id: user.id, role: user.role };
 
     const accessToken = jwt.sign(payload, TOKEN_SECRET, {
       expiresIn: JWT_ACCESS_TOKEN_EXPIRES_TIME,

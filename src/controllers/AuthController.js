@@ -80,7 +80,7 @@ router.post('/login', async (req, res) => {
     return res.status(200).json(
       convertToResponse(
         {
-          user: { name: user.name, user_name: user.user_name, mobile: user.mobile, role: user.role },
+          user: { id: user._id, name: user.name, user_name: user.user_name, mobile: user.mobile, role: user.role },
           access_token: accessToken,
           refresh_token: user.refresh_token,
         },

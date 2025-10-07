@@ -1,4 +1,5 @@
 import CryptoJS from 'crypto-js';
+import jwt from 'jsonwebtoken';
 
 export const encrypt = (text) => {
   return CryptoJS?.enc?.Base64?.stringify(CryptoJS?.enc?.Utf8?.parse(text));
@@ -89,4 +90,24 @@ export const daysUntil = (date) => {
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   return diffDays;
+};
+
+/**
+ * Helper function to extract user data from Bearer token
+ */
+export const getUserFromToken = (req) => {
+  const authHeader = req.headers['authorization'];
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ isAuthenticated: false, message: 'Token is not provided' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  console.log(token);
+
+  try {
+    return jwt.verify(token, process.env.TOKEN_SECRET);
+  } catch (error) {
+    return null;
+  }
 };
