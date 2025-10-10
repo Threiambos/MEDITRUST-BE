@@ -116,7 +116,7 @@ router.put('/:id', async (req, res) => {
 
     const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updatedUser) return res.status(404).json({ error: 'User not found' });
-    res.json(updatedUser);
+    res.json({updatedUser, message: 'User Updated Successfully'});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
